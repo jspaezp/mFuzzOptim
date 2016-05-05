@@ -1,7 +1,10 @@
-require(Mfuzz)
 require(shiny)
 require(miniUI)
-require(data.table)
+require(Mfuzz)
+require(dplyr)
+require(tidyr)
+require(ggplot2)
+require(DT)
 
 mFuzzOpt <- function(data) {
     
@@ -37,12 +40,16 @@ mFuzzOpt <- function(data) {
             # TODO plot options panel
             # TODO : allow choosing other distance measurements
             # Plot Panel
-            miniTabPanel("Plot", icon = icon("clusterPlot"),
+            miniTabPanel("Plot", icon = icon("plot"),
                          miniContentPanel(padding = 0,
                                           plotOutput("clusters", height = "100%")
                          )
             ),
-            
+            miniTabPanel("ggPlot", icon = icon("plot"),
+                         miniContentPanel(padding = 0,
+                            plotOutput("ggClusterPlot", height = "90%")
+                         )
+            ),
             miniTabPanel("Clustering Table", icon = icon("table"),
                          miniContentPanel(
                              selectInput("tableAttribute",
@@ -76,7 +83,57 @@ mFuzzOpt <- function(data) {
                   m = input$fuzzyness)
         ) 
         
+        # ggMfuzzplot definition
+        mFuzz.plotgg <- function(data, clustering) {
+            clusterindex <- clustering$cluster
+            memship <- clustering$membership 
+            colnames(memship) <- paste("membership", 
+                                       1:(dim(memship)[2]), 
+                                       sep = ("")) 
+            
+            exp <- exprs(data) %>% 
+                data.frame(. , rownames(data), clusterindex, memship) %>% 
+                tbl_df()
+            # Flag ()
+            print(exp)
+            exp <- exp %>% 
+                gather(sample, expression ,
+                       - contains("rownames"),
+                       - contains("membership"),
+                       - clusterindex) %>% 
+                separate(col = sample, 
+                         sep = "_", 
+                         into = c("Something","time")) %>% 
+                select(-Something) %>% 
+                mutate(time = as.numeric(time))
+            
+            # Flag ()
+            print(exp)
+            memships <- grep("membership", 
+                             unique(colnames(exp)), 
+                             value = TRUE)
+            
+            exp[["maxMembership"]] <- exp %>%  
+                select(contains("membership")) %>%
+                apply(., 1, max) 
+            
+            # Flag ()
+            print(exp)
+            g <- ggplot(exp, aes(x = time, y = expression)) +
+                geom_line(aes(group = rownames.data., 
+                              colour = maxMembership, 
+                              order = rank(maxMembership)
+                )
+                ) + 
+                scale_colour_gradientn(colours = rainbow(3)) +
+                facet_wrap(~clusterindex)    
+            return(g)
+        } 
+        
+        # Default mfuzz plot 
+        
         output$clusters <- renderPlot({
+            print("asdasdasdasdasd")
             collumns <- ceiling(sqrt(input$cClusters))
             rows <- ceiling(input$cClusters/collumns)
             # draw the plot with the specified parameters
@@ -86,16 +143,23 @@ mFuzzOpt <- function(data) {
                         mfrow=c(rows,collumns),
                         centre=TRUE) # lines for cluster centres will be included
         })
+
+        # ggMfuzzplot Rendering
+        output$ggClusterPlot <- renderPlot({
+            collumns <- ceiling(sqrt(input$cClusters))
+            rows <- ceiling(input$cClusters/collumns)
+            pl <- mFuzz.plotgg(data = data, clustering = clustering())
+            pl
+        })
+        
         
         # output table of the clustering
         
         output$table <- DT::renderDataTable({
             
-            memberships <- (clustering())$cluster 
-            attributeTable <- data.table(
-                do.call(what = input$tableAttribute, args = list(object = data)),
-                keep.rownames = TRUE
-            )
+            # memberships <- (clustering())$cluster 
+            attributeTable <- do.call(what = input$tableAttribute, args = list(object = data))
+            attributeTable <- data.frame(attributeTable)
             attributeTable
         })
         
