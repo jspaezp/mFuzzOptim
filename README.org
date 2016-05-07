@@ -1,0 +1,25 @@
+* MfuzzOpt (name under revision)
+
+This is supposed to be a shiny gadget whose purpose is to make interactive the generation of plots based on the Mfuzz cMeans clustering package in R (currently located in CRAN)
+** Usage Example
+*** Using a gene expression dataset
+#+BEGIN_SRC r
+require(Mfuzz)
+
+data("yeast")
+
+# Data pre-processing
+exprSet <- filter.NA(yeast, thres = 0.25)
+exprSet <- fill.NA(exprSet, mode = "knn")
+exprSet <- standardise(exprSet)
+
+source("app.R/app.R")
+mFuzzOpt(data = exprSet)
+
+#+END_SRC
+** Know Issues
+** TODO
+- Return the code to obtain the graph when the app stops
+- make another GUI, to make better use of the screen size 
+- Possibly make the graphs interactive
+- Organize as a package
