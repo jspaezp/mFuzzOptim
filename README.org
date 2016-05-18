@@ -1,6 +1,6 @@
 * MfuzzOpt (name under revision)
 
-This is supposed to be a shiny gadget whose purpose is to make interactive the generation of plots based on the Mfuzz cMeans clustering package in R (currently located in CRAN)
+This is supposed to be a shiny gadget whose purpose is to make interactive the generation of plots based on the Mfuzz cMeans clustering package in R (currently located in Bioconductor)
 ** Usage Example
 *** Using a gene expression dataset
 #+BEGIN_SRC r
@@ -17,7 +17,7 @@ source("app.R/app.R")
 mFuzzOpt(data = exprSet)
 
 #+END_SRC
-** Know Issues
+** Know Issues and todo
 ** TODO
 - Return the code to obtain the graph when the app stops
 - make another GUI, to make better use of the screen size 
