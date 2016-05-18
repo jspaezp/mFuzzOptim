@@ -15,24 +15,6 @@ mFuzzOpt <- function(data) {
         
         miniTabstripPanel(
             
-            # Sidebar with a slider input for number of clusters and fuzziness
-            
-            miniTabPanel("Parameters", icon = icon("sliders"),
-                miniContentPanel(
-                    sliderInput("cClusters",
-                        "Number of Clusters",
-                        step = 1,
-                        min = 2,
-                        max = 20,
-                        value = 4),
-                    sliderInput("fuzzyness",
-                        "Fuzziness",
-                        step = 0.1,
-                        min = 1,
-                        max = 5,
-                        value = 1.4)
-                )
-            ),
             # TODO data pre-processing .. or not ...
             #    filter missing ... or not ..
             #    fill missing ... or not ...
@@ -44,7 +26,25 @@ mFuzzOpt <- function(data) {
             miniTabPanel("Plot",
                 icon = icon("plot"),
                 miniContentPanel(padding = 0,
-                plotOutput("clusters", height = "100%")
+                    fillCol(flex = c(2, 10),
+                        fillRow(
+                            sliderInput("cClusters",
+                                        "Number of Clusters",
+                                        step = 1,
+                                        min = 2,
+                                        max = 20,
+                                        value = 4),
+                            sliderInput("fuzzyness",
+                                        "Fuzziness",
+                                        step = 0.1,
+                                        min = 1,
+                                        max = 5,
+                                        value = 1.4),
+                            height = "10%"
+                            ),
+                        plotOutput("clusters", 
+                            height = "90%")
+                    )
                 )
             ),
             miniTabPanel("Clustering Table",
