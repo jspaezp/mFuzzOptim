@@ -1,13 +1,13 @@
-require(shiny)
-require(miniUI)
-require(Mfuzz)
-require(dplyr)
-require(tidyr)
-require(ggplot2)
-require(DT)
+
 
 mFuzzOpt <- function(data) {
-    
+    require(shiny)
+    require(miniUI)
+    require(Mfuzz)
+    require(dplyr)
+    require(tidyr)
+    require(ggplot2)
+    require(DT)   
     ui <- miniPage(
         
         # Application title

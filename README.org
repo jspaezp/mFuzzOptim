@@ -20,6 +20,4 @@ mFuzzOpt(data = exprSet)
 ** Know Issues and todo
 ** TODO
 - Return the code to obtain the graph when the app stops
-- make another GUI, to make better use of the screen size 
-- Possibly make the graphs interactive
 - Organize as a package
